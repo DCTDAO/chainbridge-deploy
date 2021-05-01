@@ -11,6 +11,7 @@ const ContractABIs = {
     Erc20Mintable: require(CONTRACT_PATH + "/ERC20PresetMinterPauser.json"),
     Erc721Handler: require(CONTRACT_PATH + "/ERC721Handler.json"),
     Erc721Mintable: require(CONTRACT_PATH + "/ERC721MinterBurnerPauser.json"),
+    ERC20GenericNativeSwap: require(CONTRACT_PATH + "/ERC20GenericNativeSwap.json"), 
     GenericHandler: require(CONTRACT_PATH + "/GenericHandler.json"),
     CentrifugeAssetStore: require(CONTRACT_PATH + "/CentrifugeAsset.json"),
     WETC: require("./contracts/WETC.json"),

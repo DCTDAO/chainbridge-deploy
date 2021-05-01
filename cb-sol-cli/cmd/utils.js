@@ -8,7 +8,7 @@ const setupParentArgs = async (args, parent) => {
     } else {
         args.provider = new ethers.providers.JsonRpcProvider(args.url, {
             name: "custom",
-            chainId: Number(parent.networkId)
+	    chainId: Number(parent.networkId)
         });
     }
     args.gasLimit = ethers.utils.hexlify(Number(parent.gasLimit))

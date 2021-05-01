@@ -125,6 +125,23 @@ const withdrawCmd = new Command("withdraw")
         await waitForTx(args.provider, tx.hash)
     })
 
+const transferFundsCmd = new Command("transferFunds")
+    .description("Transfer funds (Native) collacted from Bridge")
+    .option('--bridge <address>', 'Bridge contract address', constants.BRIDGE_ADDRESS)
+    .option('--recipient <address> ','Recipeint address')
+    .option('--amount <value>','Amount to withdraw (wei)')
+    .action(async function (args){
+    	await setupParentArgs(args, args.parent.parent)
+    	const bridgeInstance = new ethers.Contract(args.bridge, constants.ContractABIs.Bridge.abi, args.wallet);
+        log(args, `Withdrawing Native tokens  amount  ${args.amount} to recipient ${args.recipient}`)
+        let tx = await bridgeInstance.transferFunds([args.recipient], [args.amount])
+        await waitForTx(args.provider, tx.hash)
+
+    
+    })
+    
+
+
 const adminCmd = new Command("admin")
 
 adminCmd.addCommand(isRelayerCmd)
@@ -137,5 +154,6 @@ adminCmd.addCommand(pauseTransfersCmd)
 adminCmd.addCommand(unpauseTransfersCmd)
 adminCmd.addCommand(changeFeeCmd)
 adminCmd.addCommand(withdrawCmd)
+adminCmd.addCommand(transferFundsCmd)
 
 module.exports = adminCmd

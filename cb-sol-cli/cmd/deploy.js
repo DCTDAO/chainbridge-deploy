@@ -15,6 +15,8 @@ const deployCmd = new Command("deploy")
     .option('--erc20Handler', 'Deploy erc20Handler contract')
     .option('--erc721Handler', 'Deploy erc721Handler contract')
     .option('--genericHandler', 'Deploy genericHandler contract')
+    .option('--erc20NativeSwap', 'Deploy erc20NativeSwap swap')
+    .option('--WNATIVE <address>','WNATIVE addr for ERC20NativeSwap')
     .option('--erc20', 'Deploy erc20 contract')
     .option('--erc20Symbol <symbol>', 'Name for the erc20 contract', "")
     .option('--erc20Name <name>', 'Symbol for the erc20 contract', "")
@@ -51,6 +53,10 @@ const deployCmd = new Command("deploy")
                 await deployGenericHandler(args)
                 deployed = true
             }
+	    if (args.erc20NativeSwap){
+		await deployERC20GenericSwapNative(args);
+		deployed = true
+	    }
             if (args.erc20) {
                 await deployERC20(args)
                 deployed = true
@@ -104,8 +110,8 @@ const displayLog = (args) => {
 ================================================================
 Url:        ${args.url}
 Deployer:   ${args.wallet.address}
-Gas Limit:   ${ethers.utils.bigNumberify(args.gasLimit)}
-Gas Price:   ${ethers.utils.bigNumberify(args.gasPrice)}
+Gas Limit:   ${ethers.BigNumber.from(args.gasLimit)}
+Gas Price:   ${ethers.BigNumber.from(args.gasPrice)}
 Deploy Cost: ${ethers.utils.formatEther(args.cost)}
 
 Options
@@ -118,21 +124,23 @@ Expiry:      ${args.expiry}
 
 Contract Addresses
 ================================================================
-Bridge:             ${args.bridgeContract ? args.bridgeContract : "Not Deployed"}
+Bridge:                 ${args.bridgeContract ? args.bridgeContract : "Not Deployed"}
 ----------------------------------------------------------------
-Erc20 Handler:      ${args.erc20HandlerContract ? args.erc20HandlerContract : "Not Deployed"}
+Erc20 Handler:          ${args.erc20HandlerContract ? args.erc20HandlerContract : "Not Deployed"}
 ----------------------------------------------------------------
-Erc721 Handler:     ${args.erc721HandlerContract? args.erc721HandlerContract : "Not Deployed"}
+Erc721 Handler:         ${args.erc721HandlerContract? args.erc721HandlerContract : "Not Deployed"}
 ----------------------------------------------------------------
-Generic Handler:    ${args.genericHandlerContract ? args.genericHandlerContract : "Not Deployed"}
+Generic Handler:        ${args.genericHandlerContract ? args.genericHandlerContract : "Not Deployed"}
 ----------------------------------------------------------------
-Erc20:              ${args.erc20Contract ? args.erc20Contract : "Not Deployed"}
+Erc20GenericNativeswap: ${args.erc20NativeSwap ? args.erc20NativeSwapContract : "Not Deployed"}
 ----------------------------------------------------------------
-Erc721:             ${args.erc721Contract ? args.erc721Contract : "Not Deployed"}
+Erc20:                  ${args.erc20Contract ? args.erc20Contract : "Not Deployed"}
 ----------------------------------------------------------------
-Centrifuge Asset:   ${args.centrifugeAssetStoreContract ? args.centrifugeAssetStoreContract : "Not Deployed"}
+Erc721:                 ${args.erc721Contract ? args.erc721Contract : "Not Deployed"}
 ----------------------------------------------------------------
-WETC:               ${args.WETCContract ? args.WETCContract : "Not Deployed"}
+Centrifuge Asset:       ${args.centrifugeAssetStoreContract ? args.centrifugeAssetStoreContract : "Not Deployed"}
+----------------------------------------------------------------
+WETC:                   ${args.WETCContract ? args.WETCContract : "Not Deployed"}
 ================================================================
         `)
 }
@@ -173,6 +181,17 @@ async function deployERC20Handler(args) {
     args.erc20HandlerContract = contract.address
     console.log("✓ ERC20Handler contract deployed")
 }
+
+async function deployERC20GenericSwapNative(args){
+	const factory = new ethers.ContractFactory(constants.ContractABIs.ERC20GenericNativeSwap.abi, constants.ContractABIs.ERC20GenericNativeSwap.bytecode, args.wallet);
+
+	const contract = await factory.deploy(args.bridgeContract,args.WNATIVE,[],[],[], {gasPrice: args.gasPrice, gasLimit: args.gasLimit});
+	await contract.deployed();
+	args.erc20NativeSwapContract = contract.address
+	console.log("�~\~S ERCGenericNativeSwap contract deployed")
+
+}
+
 
 async function deployERC721(args) {
     const factory = new ethers.ContractFactory(constants.ContractABIs.Erc721Mintable.abi, constants.ContractABIs.Erc721Mintable.bytecode, args.wallet);

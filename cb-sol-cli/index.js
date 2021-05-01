@@ -9,6 +9,7 @@ const {
     bridge,
     admin,
     erc20,
+    erc20NativeSwap,
     erc721,
     centrifuge,
 } = require('./cmd/index');
@@ -29,6 +30,7 @@ program.addCommand(admin)
 program.addCommand(erc20)
 program.addCommand(erc721)
 program.addCommand(centrifuge)
+program.addCommand(erc20NativeSwap)
 
 program.allowUnknownOption(false);
 
