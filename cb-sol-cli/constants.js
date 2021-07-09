@@ -9,6 +9,8 @@ const ContractABIs = {
     Bridge: require(CONTRACT_PATH + "/Bridge.json"),
     Erc20Handler: require(CONTRACT_PATH + "/ERC20Handler.json"),
     Erc20Mintable: require(CONTRACT_PATH + "/ERC20PresetMinterPauser.json"),
+    DUSDT: require(CONTRACT_PATH + "/DUSDTPresentMinterPauser.json"),
+    TOK: require(CONTRACT_PATH + "/TOKPresentMinterPauser.json"),
     Erc721Handler: require(CONTRACT_PATH + "/ERC721Handler.json"),
     Erc721Mintable: require(CONTRACT_PATH + "/ERC721MinterBurnerPauser.json"),
     ERC20GenericNativeSwap: require(CONTRACT_PATH + "/ERC20GenericNativeSwap.json"), 

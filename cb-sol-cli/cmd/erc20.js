@@ -30,6 +30,20 @@ const addMinterCmd = new Command("add-minter")
         await waitForTx(args.provider, tx.hash)
     })
 
+const removeMinterCmd = new Command("remove-minter")
+    .description("Remove minter from the contract")
+    .option('--erc20Address <address>', 'ERC20 contract address', constants.ERC20_ADDRESS)
+    .option('--minter <address>', 'Minter address', constants.relayerAddresses[1])
+    .action(async function(args) {
+        await setupParentArgs(args, args.parent.parent)
+        const erc20Instance = new ethers.Contract(args.erc20Address, constants.ContractABIs.Erc20Mintable.abi, args.wallet);
+        let MINTER_ROLE = await erc20Instance.MINTER_ROLE();
+        log(args, `Removing ${args.minter} as a minter on contract ${args.erc20Address}`);
+        const tx = await erc20Instance.revokeRole(MINTER_ROLE, args.minter);
+        await waitForTx(args.provider, tx.hash)
+    })
+
+
 const approveCmd = new Command("approve")
     .description("Approve tokens for transfer")
     .option('--amount <value>', "Amount to transfer", 1)
@@ -150,6 +164,7 @@ const erc20Cmd = new Command("erc20")
 
 erc20Cmd.addCommand(mintCmd)
 erc20Cmd.addCommand(addMinterCmd)
+erc20Cmd.addCommand(removeMinterCmd)
 erc20Cmd.addCommand(approveCmd)
 erc20Cmd.addCommand(depositCmd)
 erc20Cmd.addCommand(balanceCmd)

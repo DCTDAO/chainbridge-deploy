@@ -12,12 +12,15 @@ const deployCmd = new Command("deploy")
     .option('--expiry <blocks>', 'Numer of blocks after which a proposal is considered cancelled', 100)
     .option('--all', 'Deploy all contracts')
     .option('--bridge', 'Deploy bridge contract')
+    .option('--bridgeAddr <address>', 'Bridge contract address')
     .option('--erc20Handler', 'Deploy erc20Handler contract')
     .option('--erc721Handler', 'Deploy erc721Handler contract')
     .option('--genericHandler', 'Deploy genericHandler contract')
     .option('--erc20NativeSwap', 'Deploy erc20NativeSwap swap')
     .option('--WNATIVE <address>','WNATIVE addr for ERC20NativeSwap')
     .option('--erc20', 'Deploy erc20 contract')
+    .option('--DUSDT', 'Deploy DUSDT contract')
+    .option('--TOK', 'Deploy TOK contract')
     .option('--erc20Symbol <symbol>', 'Name for the erc20 contract', "")
     .option('--erc20Name <name>', 'Symbol for the erc20 contract', "")
     .option('--erc721', 'Deploy erc721 contract')
@@ -41,6 +44,9 @@ const deployCmd = new Command("deploy")
                 await deployBridgeContract(args);
                 deployed = true
             }
+	    if (args.bridgeAddr){
+		args.bridgeContract = args.bridgeAddr
+	    }
             if (args.erc20Handler) {
                 await deployERC20Handler(args);
                 deployed = true
@@ -61,6 +67,14 @@ const deployCmd = new Command("deploy")
                 await deployERC20(args)
                 deployed = true
             }
+	    if (args.TOK){
+		await deployTOK(args)
+		deployed = true
+	    }
+	    if (args.DUSDT){
+		await deployDUSDT(args)
+		deployed = true
+	    }
             if (args.erc721) {
                 await deployERC721(args)
                 deployed = true
@@ -138,6 +152,10 @@ Erc20:                  ${args.erc20Contract ? args.erc20Contract : "Not Deploye
 ----------------------------------------------------------------
 Erc721:                 ${args.erc721Contract ? args.erc721Contract : "Not Deployed"}
 ----------------------------------------------------------------
+TOK:                  ${args.TOKContract ? args.TOKContract : "Not Deployed"}
+----------------------------------------------------------------
+DUSDT:                  ${args.DUSDTContract ? args.DUSDTContract : "Not Deployed"}
+----------------------------------------------------------------
 Centrifuge Asset:       ${args.centrifugeAssetStoreContract ? args.centrifugeAssetStoreContract : "Not Deployed"}
 ----------------------------------------------------------------
 WETC:                   ${args.WETCContract ? args.WETCContract : "Not Deployed"}
@@ -171,6 +189,23 @@ async function deployERC20(args) {
     args.erc20Contract = contract.address
     console.log("✓ ERC20 contract deployed")
 }
+
+async function deployDUSDT(args){
+    const factory = new ethers.ContractFactory(constants.ContractABIs.DUSDT.abi, constants.ContractABIs.DUSDT.bytecode, args.wallet);
+    const contract = await factory.deploy({ gasPrice: args.gasPrice, gasLimit: args.gasLimit});
+    await contract.deployed();
+    args.DUSDTContract = contract.address
+    console.log("✓ DUSDT contract deployed")
+}
+async function deployTOK(args){
+    const factory = new ethers.ContractFactory(constants.ContractABIs.TOK.abi, constants.ContractABIs.TOK.bytecode, args.wallet);
+    const contract = await factory.deploy({ gasPrice: args.gasPrice, gasLimit: args.gasLimit});
+    await contract.deployed();
+    args.TOKContract = contract.address
+    console.log("✓ TOK contract deployed")
+}
+
+
 
 async function deployERC20Handler(args) {
     const factory = new ethers.ContractFactory(constants.ContractABIs.Erc20Handler.abi, constants.ContractABIs.Erc20Handler.bytecode, args.wallet);
